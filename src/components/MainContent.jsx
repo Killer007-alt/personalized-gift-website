@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -21,9 +21,40 @@ export default function MainContent() {
   ]
 
   const [currentPage, setCurrentPage] = useState(0)
-  const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(images[0])
 
   const galleryPageIndex = 3 // index of gallery page in pages array
+
+  // Auto slideshow effect
+  useEffect(() => {
+    if (currentPage !== galleryPageIndex) return
+    const interval = setInterval(() => {
+      const currentIndex = images.indexOf(selectedImage)
+      const nextIndex = (currentIndex + 1) % images.length
+      setSelectedImage(images[nextIndex])
+    }, 3500) // 3.5 seconds
+    return () => clearInterval(interval)
+  }, [selectedImage, currentPage])
+
+  const handleNext = () => {
+    if (currentPage === galleryPageIndex) {
+      const currentIndex = images.indexOf(selectedImage)
+      const nextIndex = (currentIndex + 1) % images.length
+      setSelectedImage(images[nextIndex])
+    } else {
+      setCurrentPage(prev => Math.min(prev + 1, pages.length - 1))
+    }
+  }
+
+  const handlePrev = () => {
+    if (currentPage === galleryPageIndex) {
+      const currentIndex = images.indexOf(selectedImage)
+      const prevIndex = (currentIndex - 1 + images.length) % images.length
+      setSelectedImage(images[prevIndex])
+    } else {
+      setCurrentPage(prev => Math.max(prev - 1, 0))
+    }
+  }
 
   const pages = [
     // Cover Page
@@ -108,27 +139,30 @@ export default function MainContent() {
 
     // Snapchat Gallery Page
     <StoryPage key="gallery" backgroundColor="bg-gradient-to-br from-yellow-200 to-pink-200">
-      <div className="flex flex-col items-center justify-center h-full text-center px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-6 relative z-10">Our Moments</h2>
+      <div className="relative flex flex-col items-center justify-center h-full text-center px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-6 relative z-20">Our Moments</h2>
+
+        {/* Cinematic overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 z-10 rounded-2xl pointer-events-none"></div>
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={selectedImage ?? images[0]}
-            initial={{ opacity: 0, scale: 0.8 }}
+            key={selectedImage}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.5 }}
-            className="rounded-2xl overflow-hidden shadow-lg"
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-20 rounded-2xl overflow-hidden shadow-2xl"
           >
             <Image
-              src={`/images/${selectedImage ?? images[0]}`}
+              src={`/images/${selectedImage}`}
               alt={`Gallery image`}
               width={400}
               height={300}
               className="object-cover w-full h-full rounded-2xl"
             />
-            <p className="mt-4 text-center text-gray-700">
-              Moment {images.indexOf(selectedImage ?? images[0]) + 1}
+            <p className="mt-4 text-center text-gray-100 text-lg font-semibold drop-shadow-md">
+              Moment {images.indexOf(selectedImage) + 1}
             </p>
           </motion.div>
         </AnimatePresence>
@@ -136,15 +170,42 @@ export default function MainContent() {
     </StoryPage>
   ]
 
-  // Bottom button handlers
-  const handleNext = () => {
-    if (currentPage === galleryPageIndex) {
-      const currentIndex = images.indexOf(selectedImage ?? images[0])
-      const nextIndex = (currentIndex + 1) % images.length
-      setSelectedImage(images[nextIndex])
-    } else {
-      setCurrentPage(prev => Math.min(prev + 1, pages.length - 1))
-    }
+  return (
+    <div className="w-full h-full relative">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full h-full"
+        >
+          {pages[currentPage]}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Bottom Arrows Navigation */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-8 z-50">
+        {/* Previous Arrow */}
+        <button
+          onClick={handlePrev}
+          className="w-14 h-14 flex items-center justify-center bg-pink-500 text-white rounded-full shadow-lg hover:shadow-pink-400/60 hover:scale-110 transition-all duration-300"
+        >
+          <ChevronLeft size={28} />
+        </button>
+
+        {/* Next Arrow */}
+        <button
+          onClick={handleNext}
+          className="w-14 h-14 flex items-center justify-center bg-white text-pink-500 rounded-full shadow-lg hover:shadow-pink-400/40 hover:scale-110 transition-all duration-300"
+        >
+          <ChevronRight size={28} />
+        </button>
+      </div>
+    </div>
+  )
+}    }
   }
 
   const handlePrev = () => {
