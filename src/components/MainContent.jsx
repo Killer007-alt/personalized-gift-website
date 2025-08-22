@@ -17,15 +17,14 @@ export default function MainContent() {
     "Snapchat-1681876362.jpg",
     "Snapchat-1389843033.jpg",
     "Snapchat-1754831128.jpg",
-    "Snapchat-1220852962-2.jpg" // ~ replaced with -
+    "Snapchat-1220852962-2.jpg"
   ]
 
   const galleryPageIndex = 3
-
   const [currentPage, setCurrentPage] = useState(0)
   const [selectedImage, setSelectedImage] = useState(images[0])
 
-  // Auto-slideshow
+  // Auto slideshow
   useEffect(() => {
     if (currentPage !== galleryPageIndex) return
     const interval = setInterval(() => {
@@ -140,11 +139,64 @@ export default function MainContent() {
     <StoryPage key="gallery" backgroundColor="bg-gradient-to-br from-yellow-200 to-pink-200">
       <div className="relative flex flex-col items-center justify-center h-full text-center px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-6 relative z-20">Our Moments</h2>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 z-10 rounded-2xl pointer-events-none"></div>
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedImage}
             initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-20 rounded-2xl overflow-hidden shadow-2xl"
+          >
+            <Image
+              src={`/images/${selectedImage}`}
+              alt={`Gallery image`}
+              width={400}
+              height={300}
+              className="object-cover w-full h-full rounded-2xl"
+            />
+            <p className="mt-4 text-center text-gray-100 text-lg font-semibold drop-shadow-md">
+              Moment {images.indexOf(selectedImage) + 1}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </StoryPage>
+  ]
+
+  return (
+    <div className="w-full h-full relative">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full h-full"
+        >
+          {pages[currentPage]}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Bottom Arrows */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-8 z-50">
+        <button
+          onClick={handlePrev}
+          className="w-14 h-14 flex items-center justify-center bg-pink-600 text-white rounded-full shadow-lg hover:shadow-pink-500/60 hover:scale-110 transition-all duration-300"
+        >
+          <ChevronLeft size={28} />
+        </button>
+        <button
+          onClick={handleNext}
+          className="w-14 h-14 flex items-center justify-center bg-white text-pink-600 rounded-full shadow-lg hover:shadow-pink-500/40 hover:scale-110 transition-all duration-300"
+        >
+          <ChevronRight size={28} />
+        </button>
+      </div>
+    </div>
+  )
+}            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.8 }}
