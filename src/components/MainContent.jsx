@@ -78,7 +78,7 @@ export default function MainContent() {
           Our Special Story
         </h1>
         <div className="text-2xl md:text-3xl text-purple-700 mb-8 relative z-10">
-          Hey Cutiepie, you are<br />my<FlipWords words={['sunshine', 'soulmate', 'everything', 'love', 'world']} className="text-nowrap" />
+          Hey Cutiepie, you are<br />my <FlipWords words={['sunshine', 'soulmate', 'everything', 'love', 'world']} className="text-nowrap" />
         </div>
       </div>
     </StoryPage>,
@@ -145,6 +145,58 @@ export default function MainContent() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-20 rounded-2xl overflow-hidden shadow-2xl"
+          >
+            <Image
+              src={`/images/${selectedImage}`}
+              alt={`Gallery image`}
+              width={400}
+              height={300}
+              className="object-cover w-full h-full rounded-2xl"
+            />
+            <p className="mt-4 text-center text-gray-100 text-lg font-semibold drop-shadow-md">
+              Moment {images.indexOf(selectedImage) + 1}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </StoryPage>
+  ]
+
+  return (
+    <div className="w-full h-full relative">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full h-full"
+        >
+          {pages[currentPage]}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Bottom Arrows */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-8 z-50">
+        <button
+          onClick={handlePrev}
+          className="w-14 h-14 flex items-center justify-center bg-pink-600 text-white rounded-full shadow-lg hover:shadow-pink-500/60 hover:scale-110 transition-all duration-300"
+        >
+          <ChevronLeft size={28} />
+        </button>
+        <button
+          onClick={handleNext}
+          className="w-14 h-14 flex items-center justify-center bg-white text-pink-600 rounded-full shadow-lg hover:shadow-pink-500/40 hover:scale-110 transition-all duration-300"
+        >
+          <ChevronRight size={28} />
+        </button>
+      </div>
+    </div>
+  )
+}            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.8 }}
             className="relative z-20 rounded-2xl overflow-hidden shadow-2xl"
           >
