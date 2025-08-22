@@ -9,9 +9,6 @@ import { TimeCounter } from './TimeCounter'
 import { FlipWords } from './ui/flip-words'
 
 export default function MainContent() {
-  const [currentPage, setCurrentPage] = useState(0)
-  const [selectedImage, setSelectedImage] = useState(null)
-
   const images = [
     "Snapchat-261752186.jpg",
     "Snapchat-1679300968.jpg",
@@ -23,8 +20,10 @@ export default function MainContent() {
     "Snapchat-1220852962~2.jpg"
   ]
 
-  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, pages.length - 1))
-  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 0, 0))
+  const [currentPage, setCurrentPage] = useState(0)
+  const [selectedImage, setSelectedImage] = useState(null)
+
+  const galleryPageIndex = 3 // index of gallery page in pages array
 
   const pages = [
     // Cover Page
@@ -51,14 +50,6 @@ export default function MainContent() {
         <div className="text-2xl md:text-3xl text-purple-700 mb-8 relative z-10">
           Hey Cutiepie, you are<br />my<FlipWords words={['sunshine', 'soulmate', 'everything', 'love', 'world']} className="text-nowrap" />
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-pink-500 text-white px-6 py-3 rounded-full text-lg shadow-btn hover:bg-pink-600 transition-colors duration-300"
-          onClick={nextPage}
-        >
-          Open Our Story
-        </motion.button>
       </div>
     </StoryPage>,
 
@@ -102,20 +93,14 @@ export default function MainContent() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <TimeCounter
-              startDate="2025-04-01"
-              label="As Friends"
-            />
+            <TimeCounter startDate="2025-04-01" label="As Friends" />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <TimeCounter
-              startDate="2024-07-01"
-              label="As a Couple"
-            />
+            <TimeCounter startDate="2024-07-01" label="As a Couple" />
           </motion.div>
         </div>
       </div>
@@ -126,60 +111,51 @@ export default function MainContent() {
       <div className="flex flex-col items-center justify-center h-full text-center px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-6 relative z-10">Our Moments</h2>
 
-        <div className="flex flex-col items-center">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedImage ?? images[0]}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.5 }}
-              className="rounded-2xl overflow-hidden shadow-lg"
-            >
-              <Image
-                src={`/images/${selectedImage ?? images[0]}`}
-                alt={`Gallery image`}
-                width={400}
-                height={300}
-                className="object-cover w-full h-full rounded-2xl"
-              />
-              <p className="mt-4 text-center text-gray-700">
-                Moment {images.indexOf(selectedImage ?? images[0]) + 1}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="mt-4 flex gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                const currentIndex = images.indexOf(selectedImage ?? images[0])
-                const prevIndex = (currentIndex - 1 + images.length) % images.length
-                setSelectedImage(images[prevIndex])
-              }}
-              className="px-4 py-2 bg-pink-500 text-white rounded flex items-center gap-2"
-            >
-              <ChevronLeft size={24} /> Previous
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                const currentIndex = images.indexOf(selectedImage ?? images[0])
-                const nextIndex = (currentIndex + 1) % images.length
-                setSelectedImage(images[nextIndex])
-              }}
-              className="px-4 py-2 bg-pink-500 text-white rounded flex items-center gap-2"
-            >
-              Next <ChevronRight size={24} />
-            </motion.button>
-          </div>
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedImage ?? images[0]}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.5 }}
+            className="rounded-2xl overflow-hidden shadow-lg"
+          >
+            <Image
+              src={`/images/${selectedImage ?? images[0]}`}
+              alt={`Gallery image`}
+              width={400}
+              height={300}
+              className="object-cover w-full h-full rounded-2xl"
+            />
+            <p className="mt-4 text-center text-gray-700">
+              Moment {images.indexOf(selectedImage ?? images[0]) + 1}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </StoryPage>
   ]
+
+  // Bottom button handlers
+  const handleNext = () => {
+    if (currentPage === galleryPageIndex) {
+      const currentIndex = images.indexOf(selectedImage ?? images[0])
+      const nextIndex = (currentIndex + 1) % images.length
+      setSelectedImage(images[nextIndex])
+    } else {
+      setCurrentPage(prev => Math.min(prev + 1, pages.length - 1))
+    }
+  }
+
+  const handlePrev = () => {
+    if (currentPage === galleryPageIndex) {
+      const currentIndex = images.indexOf(selectedImage ?? images[0])
+      const prevIndex = (currentIndex - 1 + images.length) % images.length
+      setSelectedImage(images[prevIndex])
+    } else {
+      setCurrentPage(prev => Math.max(prev - 1, 0))
+    }
+  }
 
   return (
     <div className="w-full h-full">
@@ -196,19 +172,19 @@ export default function MainContent() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Between Pages */}
+      {/* Bottom Navigation Buttons */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 z-50">
         <button
-          onClick={prevPage}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={handlePrev}
+          className="px-4 py-2 bg-blue-500 text-white rounded flex items-center gap-2"
         >
-          Previous Page
+          <ChevronLeft size={24} /> Previous
         </button>
         <button
-          onClick={nextPage}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={handleNext}
+          className="px-4 py-2 bg-blue-500 text-white rounded flex items-center gap-2"
         >
-          Next Page
+          Next <ChevronRight size={24} />
         </button>
       </div>
     </div>
