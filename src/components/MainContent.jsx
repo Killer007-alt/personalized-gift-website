@@ -60,7 +60,7 @@ export default function MainContent() {
                     { date: 'Yet To Happen', event: 'First Movie Together', emoji: '🎬' },
                     { date: '1 March, 2022', event: 'First Hug', emoji: '🤗' },
                     { date: 'Loading....', event: 'First Trip Together', emoji: '✈️' },
-                    { date: '10 August, 2022', event: 'First Fight & Patch-up', emoji: '💬' },
+                    { date: '08 August, 2022', event: 'First Fight & Patch-up', emoji: '💬' },
                     { date: '25 December, 2024', event: 'First Christmas Together', emoji: '🎄' },
                 ]
                     .map((item, index) => (
